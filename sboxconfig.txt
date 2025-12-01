@@ -1,0 +1,166 @@
+{
+	"log":	{
+		"disabled":	false,
+		"level":	"debug"
+	},
+	"dns":	{
+		"servers":	[{
+				"tag":	"dns_resolver-tx",
+				"address":	"119.29.29.29",
+				"detour":	"🎯 全球直连"
+			}, {
+				"tag":	"dns-direct-tx",
+				"address":	"https://doh.pub/dns-query",
+				"address_resolver":	"dns_resolver-tx",
+				"detour":	"🎯 全球直连"
+			}, {
+				"tag":	"dns-proxy-cf",
+				"address":	"https://cloudflare-dns.com/dns-query",
+				"address_resolver":	"dns_resolver-tx",
+				"detour":	"🎈 自动选择"
+			}, {
+				"tag":	"dns-block",
+				"address":	"rcode://refused"
+			}],
+		"rules":	[{
+				"domain_suffix":	["visa.com.tw", "visa.com.sg", "visa.com", "abrdns.com"],
+				"server":	"dns-direct-tx"
+			}],
+		"strategy":	"ipv4_only",
+		"final":	"dns-proxy-cf"
+	},
+	"inbounds":	[{
+			"tag":	"http-in",
+			"type":	"http",
+			"listen":	"127.0.0.1",
+			"listen_port":	10809
+		}],
+	"outbounds":	[{
+			"tag":	"🎈 自动选择",
+			"type":	"urltest",
+			"outbounds":	["TW", "SG", "USA", "TW_1", "SG_1", "USA_1"],
+			"url":	"http://www.gstatic.com/generate_204",
+			"interval":	"10m",
+			"tolerance":	50
+		}, {
+			"tag":	"🎯 全球直连",
+			"type":	"direct"
+		}, {
+			"tag":	"🚫 断开连接",
+			"type":	"block"
+		}, {
+			"type":	"vless",
+			"tag":	"TW",
+			"server":	"www.visa.com.tw",
+			"server_port":	443,
+			"uuid":	"0ae3428c-7c30-458d-92e4-146baedd06bd",
+			"flow":	"",
+			"tls":	{
+				"enabled":	true,
+				"server_name":	"www.mvp.abrdns.com"
+			},
+			"transport":	{
+				"type":	"ws",
+				"path":	"/?ed=2560",
+				"headers":	{
+					"Host":	"www.mvp.abrdns.com"
+				}
+			}
+		}, {
+			"type":	"vless",
+			"tag":	"SG",
+			"server":	"www.visa.com.sg",
+			"server_port":	443,
+			"uuid":	"0ae3428c-7c30-458d-92e4-146baedd06bd",
+			"flow":	"",
+			"tls":	{
+				"enabled":	true,
+				"server_name":	"www.mvp.abrdns.com"
+			},
+			"transport":	{
+				"type":	"ws",
+				"path":	"/?ed=2560",
+				"headers":	{
+					"Host":	"www.mvp.abrdns.com"
+				}
+			}
+		}, {
+			"type":	"vless",
+			"tag":	"USA",
+			"server":	"usa.visa.com",
+			"server_port":	443,
+			"uuid":	"0ae3428c-7c30-458d-92e4-146baedd06bd",
+			"flow":	"",
+			"tls":	{
+				"enabled":	true,
+				"server_name":	"www.mvp.abrdns.com"
+			},
+			"transport":	{
+				"type":	"ws",
+				"path":	"/?ed=2560",
+				"headers":	{
+					"Host":	"www.mvp.abrdns.com"
+				}
+			}
+		}, {
+			"type":	"trojan",
+			"tag":	"TW_1",
+			"server":	"www.visa.com.tw",
+			"server_port":	443,
+			"password":	"132579",
+			"tls":	{
+				"enabled":	true,
+				"server_name":	"www.mvp.abrdns.com"
+			},
+			"transport":	{
+				"type":	"ws",
+				"path":	"/?ed=2560",
+				"headers":	{
+					"Host":	"www.mvp.abrdns.com"
+				}
+			}
+		}, {
+			"type":	"trojan",
+			"tag":	"SG_1",
+			"server":	"www.visa.com.sg",
+			"server_port":	443,
+			"password":	"132579",
+			"tls":	{
+				"enabled":	true,
+				"server_name":	"www.mvp.abrdns.com"
+			},
+			"transport":	{
+				"type":	"ws",
+				"path":	"/?ed=2560",
+				"headers":	{
+					"Host":	"www.mvp.abrdns.com"
+				}
+			}
+		}, {
+			"type":	"trojan",
+			"tag":	"USA_1",
+			"server":	"usa.visa.com",
+			"server_port":	443,
+			"password":	"132579",
+			"tls":	{
+				"enabled":	true,
+				"server_name":	"www.mvp.abrdns.com"
+			},
+			"transport":	{
+				"type":	"ws",
+				"path":	"/?ed=2560",
+				"headers":	{
+					"Host":	"www.mvp.abrdns.com"
+				}
+			}
+		}],
+	"route":	{
+		"rules":	[{
+				"ip_cidr":	["119.29.29.29", "120.53.53.53"],
+				"outbound":	"🎯 全球直连"
+			}],
+		"final":	"🎈 自动选择",
+		"auto_detect_interface":	true,
+		"find_process":	true
+	}
+}
